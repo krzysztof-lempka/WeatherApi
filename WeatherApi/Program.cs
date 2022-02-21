@@ -14,12 +14,16 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddLogging();
+
 
 builder.Services.AddTransient<IWeatherDataService, WeatherDataService>();
-builder.Services.AddSingleton<IStorageReader>(new AzureStorageReader(
+builder.Services.AddSingleton<IStorageReader>(x => new AzureStorageReader(
     builder.Configuration["Storage:ConnectionString"],
-    builder.Configuration["Storage:ContainerName"]
+    builder.Configuration["Storage:ContainerName"],
+    x.GetRequiredService<ILogger<AzureStorageReader>>()
 ));
+
 
 RegisterValidators(builder.Services);
 RegisterFileParsers(builder.Services);
